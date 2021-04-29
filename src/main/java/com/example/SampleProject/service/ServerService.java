@@ -10,14 +10,17 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ServerService {
-
+    //TODO what if I want to pass another parameters here ?
     static AerospikeClient client = new AerospikeClient("172.28.128.3", 3000);
+    //TODO why we need to create synchronized list here?
     static List<Server> serversPool = Collections.synchronizedList(new ArrayList<>());
 
     public Server allocate(int memorySize) {
 
         serversPool=scanServersPool();
         Server server;
+
+        //TODO What will happen if I will have 30 parallel request ?
 
         // to prevent two request from accessing the serverPool list concurrently
         synchronized (serversPool){
@@ -26,6 +29,8 @@ public class ServerService {
                     .findAny()
                     .orElse(null);
         }
+
+        //TODO please try to move this part into separate method.
 
         // if there is enough space in servers pool then allocate memory
         if(server != null){
@@ -36,11 +41,14 @@ public class ServerService {
         {
             //to check if there is another server in the creating state
             synchronized (serversPool) {
+                //TODO what is difference of this line and 27?(CODE DUPLICATION)
                 server = serversPool.stream()
                         .filter(s -> (s.getFreeSize() >= memorySize && s.getState().equals("creating")))
                         .findAny()
                         .orElse(null);
             }
+
+            //TODO maybe we need separate method if we need comment the block?
 
             // if another request come while creating a new server and there is no enough space in servers pool it will wait to make sure that the new server may have space and then allocate memory
             if(server!=null)
@@ -52,15 +60,18 @@ public class ServerService {
                     exception.printStackTrace();
                 }
                 server= get(server.getServerId());
+                //TODO you may pass null here
                 server= updateServerFreeMemory(server,memorySize);
             }
+
+            //TODO please explain this part
 
             //if there is no server in creating state then create new server
             else {
                 server = create(memorySize);
                 //initially the server is in creating state so wait 20 seconds and then update server to active state
                 try {
-                    Thread.sleep(20000);
+                    Thread.sleep(20_000);
                 } catch (InterruptedException exception) {
                     exception.printStackTrace();
                 }
@@ -70,25 +81,31 @@ public class ServerService {
         return server;
     }
 
-    static synchronized public Server create(int size) // method is synchronized to prevent multi thread to access it concurrently
+    //TODO access modifier should be first
+    static synchronized public Server create(int size) //TODO why not add it as comment?
+    // method is synchronized to prevent multi thread to access it concurrently
+
     {
-            int serverId=0;
-            Server server;
-            if (!serversPool.isEmpty()) {
-                serverId = Collections.max(serversPool, Comparator.comparing(s -> s.getServerId())).getServerId() + 1;
-            }
-            server = new Server(100, "creating", serverId);
-            WritePolicy wPolicy = new WritePolicy();
-            Key key = new Key("test", "servers", server.getServerId());
-            Bin bin = new Bin("server", server);
-            client.put(wPolicy, key, bin);
-            server = updateServerFreeMemory(server, size);
-            return server;
+        int serverId=0;
+        Server server;
+        if (!serversPool.isEmpty()) {
+            serverId = Collections.max(serversPool, Comparator.comparing(s -> s.getServerId())).getServerId() + 1;
+        }
+        server = new Server(100, "creating", serverId);
+        //TODO see line 107 are there any similarities?
+        WritePolicy wPolicy = new WritePolicy();
+        Key key = new Key("test", "servers", server.getServerId());
+        Bin bin = new Bin("server", server);
+        client.put(wPolicy, key, bin);
+        server = updateServerFreeMemory(server, size);
+        return server;
     }
 
+    //TODO what is purpose of this method?
     public static Server updateServerFreeMemory(Server server, int size)
     {
-        server.setFreeSize(server.getFreeSize()-size);
+        //TODO what will happen here if server is null?
+        server.setFreeSize(server.getFreeSize() - size);
         WritePolicy wPolicy = new WritePolicy();
         Key key = new Key("test", "servers" ,server.getServerId());
         Bin bin = new Bin("server", server);
@@ -111,6 +128,7 @@ public class ServerService {
         List<Server> serversList= new ArrayList<>();
         try {
             ScanPolicy policy = new ScanPolicy();
+            //TODO the default is true
             policy.concurrentNodes = true;
             policy.priority = Priority.LOW;
             policy.includeBinData = true;
@@ -119,6 +137,7 @@ public class ServerService {
         } catch (AerospikeException e) {
             System.out.println("EXCEPTION - Message: " + e.getMessage());
         }
+
         return serversList;
     }
 
@@ -129,10 +148,8 @@ public class ServerService {
             return (Server) serverRecord.getValue("server");
         }
         else
+            //TODO bad idea, btw where is the braces :) ?
             return null;
     }
 
 }
-
-
-

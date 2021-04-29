@@ -1,6 +1,7 @@
 package com.example.SampleProject.model;
 import java.io.Serializable;
 
+//TODO please make names more descriptive, because outside it is not clear what this Server is?
 /**
  * this is model class to represent the server.
  */
@@ -17,6 +18,7 @@ public class Server implements Serializable,Comparable<Server> {
         this.serverId = serverId;
     }
 
+    //TODO would be nice to see comments one methods, especially on getters
     public int getServerId() {
         return serverId;
     }
@@ -58,5 +60,6 @@ public class Server implements Serializable,Comparable<Server> {
         }
         return 0;
     }
+    //TODO
 
 }
