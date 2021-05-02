@@ -1,7 +1,5 @@
 plugins {
-    id 'java'
     id 'war'
-    id 'java-library'
 }
 
 group 'com.example'
@@ -17,11 +15,15 @@ repositories {
 ext {
     junitVersion = '5.7.0'
 }
-
+war {
+    getArchiveFileName().set("demo.war")
+    destinationDirectory = getDestinationDirectory().dir("$rootDir/app/build/war").get()
+}
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    //implementation 'org.projectlombok:lombok:1.18.18'
     compileOnly('javax:javaee-api:8.0.1')
     implementation "com.aerospike:aerospike-client:5.0.0"
     implementation 'org.glassfish.jersey.core:jersey-server:2.22.2'
@@ -30,8 +32,13 @@ dependencies {
     implementation 'javax.xml.ws:jaxws-api:2.3.1'
     implementation 'com.sun.xml.ws:jaxws-rt:2.3.1'
     implementation 'org.glassfish.jaxb:txw2:2.4.0-b180608.0325'
+    compileOnly "org.projectlombok:lombok:1.18.16";
+    annotationProcessor "org.projectlombok:lombok:1.18.16"
+    implementation "log4j:log4j:1.2.17"
+    implementation "io.vavr:vavr:0.10.3"
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+
 }
 
 test {
