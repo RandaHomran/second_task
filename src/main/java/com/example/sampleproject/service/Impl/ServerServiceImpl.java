@@ -26,7 +26,6 @@ public class ServerServiceImpl implements ServerService {
     public ServerModel allocate(int memorySize) throws AppConfigExceptions {
 
         serversPool = scanServersPool();
-        System.out.println(serversPool.size());
         ServerModel server;
         server = filterServersByStateAndFreeMemory("active",memorySize);
 
