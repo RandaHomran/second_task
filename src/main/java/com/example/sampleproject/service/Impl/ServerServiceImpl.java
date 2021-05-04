@@ -26,6 +26,7 @@ public class ServerServiceImpl implements ServerService {
     public ServerModel allocate(int memorySize) throws AppConfigExceptions {
 
         serversPool = scanServersPool();
+        System.out.println(serversPool.size());
         ServerModel server;
         server = filterServersByStateAndFreeMemory("active",memorySize);
 
@@ -81,7 +82,7 @@ public class ServerServiceImpl implements ServerService {
         WritePolicy wPolicy = new WritePolicy();
         Key key = null;
         key = new Key(ApplicationConfig.safeGetDbName(), ApplicationConfig.getUserSetName(), server.getServerId());
-        Bin bin = new Bin(ApplicationConfig.getUserSetName(), server);
+        Bin bin = new Bin("server", server);
         client.put(wPolicy, key, bin);
         server = updateServerFreeMemory(server, size);
         return server;
@@ -98,7 +99,7 @@ public class ServerServiceImpl implements ServerService {
         server.setFreeSize(server.getFreeSize()-size);
         WritePolicy wPolicy = new WritePolicy();
         Key key = new Key(ApplicationConfig.safeGetDbName(), ApplicationConfig.getUserSetName(),server.getServerId());
-        Bin bin = new Bin(ApplicationConfig.getUserSetName(), server);
+        Bin bin = new Bin("server", server);
         client.put(wPolicy, key, bin);
         return server;
     }
@@ -112,7 +113,7 @@ public class ServerServiceImpl implements ServerService {
         server.setState("active");
         WritePolicy wPolicy = new WritePolicy();
         Key key = new Key(ApplicationConfig.safeGetDbName(), ApplicationConfig.getUserSetName(),server.getServerId());
-        Bin bin = new Bin(ApplicationConfig.getUserSetName(), server);
+        Bin bin = new Bin("server", server);
         client.put(wPolicy, key, bin);
         return server;
     }
@@ -143,7 +144,7 @@ public class ServerServiceImpl implements ServerService {
     public ServerModel get(int serverId) throws AppConfigExceptions {
         Key serverKey = new Key(ApplicationConfig.safeGetDbName(), ApplicationConfig.getUserSetName(), serverId);
         Record serverRecord = client.get(null, serverKey);
-            return (ServerModel) serverRecord.getValue(ApplicationConfig.getUserSetName());
+        return (ServerModel) serverRecord.getValue(ApplicationConfig.getUserSetName());
     }
 
     /**
@@ -160,6 +161,5 @@ public class ServerServiceImpl implements ServerService {
     }
 
 }
-
 
 

@@ -6,13 +6,13 @@ com/example/sampleproject/model/ServerModel.java
  com.example.sampleproject.model.ServerModel
 com/example/sampleproject/config/BaseConfig.java
  com.example.sampleproject.config.BaseConfig
-com/example/sampleproject/controller/ServerController.java
- com.example.sampleproject.controller.ServerController
+com/example/sampleproject/config/ApplicationConfig.java
+ com.example.sampleproject.config.ApplicationConfig
 com/example/sampleproject/service/ServerService.java
  com.example.sampleproject.service.ServerService
 com/example/sampleproject/exception/AppConfigRuntimeExceptions.java
  com.example.sampleproject.exception.AppConfigRuntimeExceptions
+com/example/sampleproject/controller/ServerController.java
+ com.example.sampleproject.controller.ServerController
 com/example/sampleproject/service/Impl/ServerServiceImpl.java
  com.example.sampleproject.service.Impl.ServerServiceImpl
-com/example/sampleproject/config/ApplicationConfig.java
- com.example.sampleproject.config.ApplicationConfig
